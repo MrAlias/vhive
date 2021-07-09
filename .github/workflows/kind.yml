@@ -153,16 +153,12 @@ jobs:
 
           # Install a networking layer
           # --------------------------
-          curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.7.1 TARGET_ARCH=x86_64 sh -
-          ./istio-1.7.1/bin/istioctl install -f ./configs/istio/istio-minimal-operator.yaml
+          kubectl apply -f https://github.com/knative/net-istio/releases/download/v0.23.0/istio.yaml || true
+          kubectl apply -f https://github.com/knative/net-istio/releases/download/v0.23.0/net-istio.yaml || true
 
           # Configure DNS
           # -------------
           kubectl apply -f https://github.com/knative/serving/releases/download/v0.23.0/serving-default-domain.yaml
-
-          # Finalize Istio
-          # --------------
-          kubectl apply --filename https://github.com/knative/net-istio/releases/download/v0.23.0/release.yaml
 
           # Install Eventing
           # ================
