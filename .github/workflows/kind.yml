@@ -147,6 +147,7 @@ jobs:
 
           # Install a networking layer
           # --------------------------
+          kubectl apply -l knative.dev/crd-install=true -f https://github.com/knative/net-istio/releases/download/v0.23.0/istio.yaml
           kubectl apply -f https://github.com/knative/net-istio/releases/download/v0.23.0/istio.yaml
           kubectl apply -f https://github.com/knative/net-istio/releases/download/v0.23.0/net-istio.yaml
 
