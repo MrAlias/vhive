@@ -35,11 +35,11 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/trace/zipkin"
+	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/semconv"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 
 	"google.golang.org/grpc"
 )
@@ -67,7 +67,7 @@ func initTracer(tp *trace.TracerProvider) func() {
 }
 
 func newZipkinExporter(url string, logger *log.Logger) (*zipkin.Exporter, error) {
-	exporter, err := zipkin.NewRawExporter(
+	exporter, err := zipkin.New(
 		url,
 		zipkin.WithLogger(logger),
 		zipkin.WithSDKOptions(trace.WithSampler(trace.AlwaysSample())),
@@ -128,6 +128,7 @@ func InitCustomTracer(url string, traceRate float64, logger *log.Logger, attr ..
 		trace.WithSampler(sampler),
 		trace.WithSyncer(exporter),
 		trace.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
 			attr...,
 		)),
 	)
