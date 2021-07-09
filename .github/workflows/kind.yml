@@ -138,6 +138,8 @@ jobs:
           # local reigstry, even when pushing $REGISTRY_NAME:$REGISTRY_PORT/some/image
           sudo echo "127.0.0.1 $REGISTRY_NAME" | sudo tee -a /etc/hosts
 
+      - uses: actions/checkout@v2
+
       - name: Install Knative
         run: |
           set -x
@@ -151,14 +153,16 @@ jobs:
 
           # Install a networking layer
           # --------------------------
-          kubectl apply -l knative.dev/crd-install=true -f https://github.com/knative/net-istio/releases/download/v0.23.0/istio.yaml
-          kubectl apply -f https://github.com/knative/net-istio/releases/download/v0.23.0/istio.yaml
-          kubectl apply -f https://github.com/knative/net-istio/releases/download/v0.23.0/net-istio.yaml
+          curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.7.1 TARGET_ARCH=x86_64 sh -
+          ./istio-1.7.1/bin/istioctl install -f ./configs/istio/istio-minimal-operator.yaml
 
           # Configure DNS
           # -------------
           kubectl apply -f https://github.com/knative/serving/releases/download/v0.23.0/serving-default-domain.yaml
 
+          # Finalize Istio
+          # --------------
+          kubectl apply --filename https://github.com/knative/net-istio/releases/download/v0.23.0/release.yaml
 
           # Install Eventing
           # ================
@@ -174,8 +178,6 @@ jobs:
           # Install a broker layer
           # ----------------------
           kubectl apply -f https://github.com/knative/eventing/releases/download/v0.23.0/mt-channel-broker.yaml
-
-      - uses: actions/checkout@v2
 
       - name: Up chained-function-eventing
         run: |
